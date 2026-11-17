@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>ניצול קלוד</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<style>
+  /* ===== צבעים: מצב בהיר ===== */
+  :root {
+    color-scheme: light;
+    --bg: #f4f3f0;
+    --surface-1: #fcfcfb;
+    --surface-2: #f0efec;
+    --border: #e2e1dc;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #6f6e69;
+    --series-1: #2a78d6;
+    --series-1-soft: #e3eefc;
+    --series-2: #eb6834;
+    --track: #ebeae6;
+    --hatch: #b3b2ac;
+    --good: #0ca30c;
+    --good-text: #006300;
+    --critical: #d03b3b;
+    --critical-text: #b42f2f;
+    --warning: #fab219;
+    --warning-text: #8a5a00;
+    --on-accent: #ffffff;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 20px rgba(0,0,0,.05);
+  }
+  /* ===== צבעים: מצב כהה (לפי הגדרת המערכת) ===== */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #111110;
+      --surface-1: #1a1a19;
+      --surface-2: #232321;
+      --border: #30302d;
+      --text-primary: #f0efec;
+      --text-secondary: #c3c2b7;
+      --text-muted: #9a998f;
+      --series-1: #3987e5;
+      --series-1-soft: #1b2f4a;
+      --series-2: #d95926;
+      --track: #262624;
+      --hatch: #5a5a54;
+      --good-text: #3fc43f;
+      --critical-text: #f08a8a;
+      --warning-text: #fab219;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+    }
+  }
+  /* ===== צבעים: מצב כהה (לפי בחירה בכפתור) ===== */
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #111110;
+    --surface-1: #1a1a19;
+    --surface-2: #232321;
+    --border: #30302d;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #9a998f;
+    --series-1: #3987e5;
+    --series-1-soft: #1b2f4a;
+    --series-2: #d95926;
+    --track: #262624;
+    --hatch: #5a5a54;
+    --good-text: #3fc43f;
+    --critical-text: #f08a8a;
+    --warning-text: #fab219;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+  }
+
+  [hidden] { display: none !important; }
+  html, body { background: var(--bg); color: var(--text-primary); }
+  body { font-family: 'Heebo', system-ui, -apple-system, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
+  .num { font-variant-numeric: tabular-nums; }
+  .text-secondary { color: var(--text-secondary); }
+  .text-muted { color: var(--text-muted); }
+
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); }
+  .sub { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; }
+  .section-title { font-weight: 700; font-size: 1.05rem; }
+  .hint { color: var(--text-secondary); font-size: .875rem; line-height: 1.6; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 10px; font-weight: 600; padding: .6rem 1rem; transition: filter .15s, opacity .15s, background .15s; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-primary); cursor: pointer; }
+  .btn:hover { filter: brightness(.97); }
+  .btn:disabled { opacity: .55; cursor: not-allowed; }
+  .btn-primary { background: var(--series-1); border-color: var(--series-1); color: var(--on-accent); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-icon { padding: .5rem; width: 40px; height: 40px; }
+  .btn:focus-visible, .chip:focus-visible, .switch:focus-visible, select:focus-visible, input:focus-visible, .tl-mark:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+
+  .chip { min-width: 44px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: background .15s, color .15s; padding: 0 .75rem; }
+  .chip[aria-pressed="true"] { background: var(--series-1); border-color: var(--series-1); color: var(--on-accent); }
+
+  select, input[type="text"], input[type="password"] { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); padding: .55rem .75rem; font: inherit; }
+  select { padding-inline-end: 2rem; }
+  input[type="range"] { width: 100%; accent-color: var(--series-1); height: 28px; }
+
+  /* מתג הפעלה וכיבוי */
+  .switch { position: relative; width: 46px; height: 26px; border-radius: 999px; background: var(--hatch); border: none; cursor: pointer; transition: background .2s; flex-shrink: 0; }
+  .switch::after { content: ''; position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s; }
+  .switch[aria-checked="true"] { background: var(--series-1); }
+  .switch[aria-checked="true"]::after { transform: translateX(-20px); }
+
+  /* תגית מצב (עם סמל, לא רק צבע) */
+  .status { display: inline-flex; align-items: center; gap: .35rem; font-weight: 600; }
+  .status-good { color: var(--good-text); }
+  .status-critical { color: var(--critical-text); }
+  .status-warning { color: var(--warning-text); }
+  .status-muted { color: var(--text-muted); }
+  .spin { animation: spin 1s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(-360deg); } }
+
+  .progress { height: 6px; border-radius: 999px; background: var(--track); overflow: hidden; }
+  .progress > div { height: 100%; background: var(--series-1); border-radius: 999px; transition: width 1s linear; }
+
+  /* ===== ציר הזמן ===== */
+  .tl { position: relative; height: 108px; }
+  .tl-track { position: absolute; top: 24px; height: 44px; left: 0; right: 0; background: var(--track); border-radius: 8px; }
+  .tl-grid { position: absolute; top: 24px; height: 44px; width: 1px; background: var(--border); }
+  .tl-seg { position: absolute; top: 24px; height: 44px; border-radius: 6px; display: flex; align-items: center; justify-content: flex-start; padding-inline-start: 6px; font-size: 12px; font-weight: 700; overflow: hidden; white-space: nowrap; cursor: default; }
+  .tl-seg.on { background: var(--series-1); color: var(--on-accent); }
+  .tl-seg.off { background: repeating-linear-gradient(45deg, transparent 0 6px, var(--hatch) 6px 7px); border: 1px dashed var(--hatch); color: var(--text-muted); }
+  .tl-seg.spill { opacity: .4; }
+  .tl-work { position: absolute; top: 18px; height: 56px; width: 0; border-right: 2px dashed var(--text-primary); }
+  .tl-work-label { position: absolute; top: 0; font-size: 12px; font-weight: 700; white-space: nowrap; transform: translateX(50%); }
+  .tl-now { position: absolute; top: 20px; height: 52px; width: 2px; background: var(--text-primary); border-radius: 2px; }
+  .tl-now::after { content: ''; position: absolute; bottom: -5px; right: -4px; border: 5px solid transparent; border-top-color: var(--text-primary); }
+  .tl-mark { position: absolute; top: 70px; width: 20px; height: 18px; transform: translateX(50%); display: flex; align-items: center; justify-content: center; cursor: default; border-radius: 6px; }
+  .tl-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--series-2); box-shadow: 0 0 0 2px var(--surface-1); }
+  .tl-mark.off .tl-dot { background: transparent; border: 2px solid var(--hatch); box-shadow: none; }
+  .tl-axis { position: absolute; top: 90px; font-size: 11px; color: var(--text-muted); transform: translateX(50%); }
+  .legend-sw { width: 14px; height: 14px; border-radius: 4px; display: inline-block; flex-shrink: 0; }
+
+  .tooltip { position: fixed; z-index: 60; max-width: 260px; background: var(--text-primary); color: var(--surface-1); font-size: 13px; line-height: 1.5; padding: .45rem .65rem; border-radius: 8px; pointer-events: none; box-shadow: 0 4px 14px rgba(0,0,0,.2); }
+
+  /* חלונית החיבור */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 50; display: flex; align-items: flex-start; justify-content: center; padding: 16px; overflow-y: auto; }
+  .modal-bg[hidden] { display: none; }
+
+  .toast { position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%); z-index: 70; max-width: min(560px, calc(100vw - 32px)); border-radius: 12px; padding: .75rem 1rem; font-weight: 500; box-shadow: 0 8px 28px rgba(0,0,0,.25); display: flex; gap: .6rem; align-items: flex-start; background: var(--surface-1); border: 1px solid var(--border); }
+  .toast[hidden] { display: none; }
+
+  .savebar { position: sticky; bottom: 0; z-index: 40; background: color-mix(in srgb, var(--surface-1) 92%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--border); }
+  pre.code { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: .75rem; font-size: 12.5px; overflow-x: auto; white-space: pre; }
+  details > summary { cursor: pointer; font-weight: 600; list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary::before { content: '◂ '; color: var(--text-muted); }
+  details[open] > summary::before { content: '▾ '; }
+  a.link { color: var(--series-1); text-decoration: underline; text-underline-offset: 3px; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ===== כותרת ===== -->
+<header class="max-w-3xl mx-auto px-4 pt-6 pb-3 flex items-center justify-between gap-3">
+  <div class="min-w-0">
+    <h1 class="text-2xl font-extrabold tracking-tight">ניצול קלוד</h1>
+    <p class="text-sm text-secondary">מנהל מחזורי 5 השעות · שעון ישראל</p>
+  </div>
+  <div class="flex items-center gap-2">
+    <button id="כפתור-ערכה" class="btn btn-icon" aria-label="החלפת מצב בהיר או כהה" title="מצב בהיר או כהה">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+    <button id="כפתור-חיבור" class="btn btn-icon" aria-label="הגדרות חיבור לגיטהאב" title="הגדרות חיבור לגיטהאב">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 pb-8 space-y-4">
+
+  <!-- ===== הודעה: לא מחובר ===== -->
+  <div id="פס-לא-מחובר" class="sub p-4 flex flex-wrap items-center justify-between gap-3" hidden>
+    <p class="hint">הדף עוד לא מחובר לגיטהאב. עד שתתחבר, הספירה מחושבת לפי ההגדרות שעל המסך, ואי אפשר לשמור או לשלוח פינג.</p>
+    <button class="btn btn-primary" data-action="פתח-חיבור">התחברות</button>
+  </div>
+
+  <!-- ===== כרטיס מצב חי ===== -->
+  <section class="card p-5" aria-labelledby="ספירה-כותרת">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div class="min-w-0 flex-1">
+        <div id="ספירה-כותרת" class="text-sm font-semibold text-secondary">טוען…</div>
+        <div id="ספירה" class="num text-5xl sm:text-6xl font-extrabold tracking-tight mt-1" dir="ltr" style="text-align:right">--:--:--</div>
+        <div id="ספירה-פירוט" class="text-sm text-secondary mt-1"></div>
+        <div class="progress mt-3" id="התקדמות-עוטף" hidden><div id="התקדמות" style="width:0%"></div></div>
+      </div>
+      <button id="כפתור-פינג" class="btn btn-primary text-base px-5 py-3">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+        שלח פינג עכשיו
+      </button>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-3 mt-5">
+      <div class="sub p-3">
+        <div class="text-xs font-semibold text-muted mb-1">ההרצה האחרונה בגיטהאב</div>
+        <div id="הרצה-אחרונה" class="text-sm">—</div>
+      </div>
+      <div class="sub p-3">
+        <div class="text-xs font-semibold text-muted mb-1">הפינג האחרון שפתח חלון</div>
+        <div id="פינג-אחרון" class="text-sm">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ציר זמן של 24 שעות ===== -->
+  <section class="card p-5" aria-labelledby="כותרת-ציר">
+    <h2 id="כותרת-ציר" class="section-title">היום שלך ב-24 שעות</h2>
+    <p id="סיכום" class="text-sm mt-2 leading-7"></p>
+    <div class="mt-4" style="direction: rtl">
+      <div id="ציר" class="tl" role="img" aria-label="ציר זמן של חלונות 5 השעות לאורך היממה"></div>
+    </div>
+    <div class="flex flex-wrap gap-x-5 gap-y-2 mt-3 text-xs text-secondary" id="מקרא">
+      <span class="inline-flex items-center gap-1.5"><span class="legend-sw" style="background:var(--series-1)"></span>חלון 5 שעות</span>
+      <span class="inline-flex items-center gap-1.5"><span class="legend-sw" style="background:repeating-linear-gradient(45deg,transparent 0 3px,var(--hatch) 3px 4px);border:1px dashed var(--hatch)"></span>מחזור כבוי</span>
+      <span class="inline-flex items-center gap-1.5"><span class="legend-sw" style="background:var(--series-2);border-radius:50%;width:10px;height:10px"></span>לחיצה אוטומטית</span>
+      <span class="inline-flex items-center gap-1.5"><span style="width:0;height:14px;border-right:2px dashed var(--text-primary)"></span>תחילת עבודה</span>
+      <span class="inline-flex items-center gap-1.5"><span style="width:2px;height:14px;background:var(--text-primary);border-radius:2px"></span><span id="מקרא-עכשיו">עכשיו</span></span>
+    </div>
+  </section>
+
+  <!-- ===== הגדרות ===== -->
+  <section class="card p-5 space-y-6" aria-labelledby="כותרת-הגדרות">
+    <h2 id="כותרת-הגדרות" class="section-title">הגדרות</h2>
+
+    <!-- שעת תחילת עבודה -->
+    <div>
+      <label class="font-semibold block mb-2">מתי אתה מתחיל לעבוד?</label>
+      <div class="flex items-center gap-2" dir="ltr" style="justify-content:flex-end">
+        <select id="בחירת-שעה" class="num text-lg font-semibold" aria-label="שעה"></select>
+        <span class="text-lg font-bold">:</span>
+        <select id="בחירת-דקות" class="num text-lg font-semibold" aria-label="דקות"></select>
+      </div>
+      <p class="hint mt-2">אפשר לבחור בקפיצות של 10 דקות, כי קלוד מעגל את תחילת החלון לעשר הדקות הקרובות.</p>
+    </div>
+
+    <!-- הקדמה -->
+    <div>
+      <div class="flex items-baseline justify-between gap-3 mb-1">
+        <label for="סרגל-הקדמה" class="font-semibold">כמה זמן לפני העבודה לפתוח את החלון?</label>
+        <span id="ערך-הקדמה" class="font-bold num whitespace-nowrap" style="color:var(--series-1)"></span>
+      </div>
+      <input id="סרגל-הקדמה" type="range" min="0" max="4.5" step="0.5">
+      <div class="flex flex-wrap gap-2 mt-2" id="קיצורי-הקדמה"></div>
+      <details class="mt-3">
+        <summary class="text-sm">למה שעתיים וחצי זה הכי משתלם?</summary>
+        <p class="hint mt-2">
+          אם החלון נפתח רק כשאתה מתחיל לעבוד, אתה עלול לגמור את המכסה אחרי שעתיים וחצי ולהיתקע עד סוף החלון.
+          כשהחלון נפתח <b>שעתיים וחצי לפני</b> העבודה, אתה מתחיל עם שעתיים וחצי שנותרו בחלון, ובדיוק באמצע יום העבודה
+          מקבל חלון חדש ומלא של 5 שעות. כך יום עבודה רגיל מקבל שתי מכסות במקום אחת.
+        </p>
+      </details>
+    </div>
+
+    <!-- שליחה מוקדמת -->
+    <div>
+      <div class="flex items-baseline justify-between gap-3 mb-1">
+        <label for="סרגל-מוקדם" class="font-semibold">כמה דקות לפני תחילת החלון לשלוח?</label>
+        <span id="ערך-מוקדם" class="font-bold num whitespace-nowrap" style="color:var(--series-1)"></span>
+      </div>
+      <input id="סרגל-מוקדם" type="range" min="0" max="9" step="1">
+      <p class="hint mt-1">
+        קלוד מעגל את תחילת החלון כלפי מעלה לעשר הדקות הקרובות. לכן שליחה 9 דקות מוקדם (למשל ב-06:21) עדיין פותחת
+        חלון שמתחיל ב-06:30, ונותנת לגיטהאב מרווח לעיכובים. בלחיצות שבאמצע היום, המערכת מחכה בעצמה לסוף החלון הקודם.
+      </p>
+    </div>
+
+    <!-- ימי עבודה -->
+    <div>
+      <div class="font-semibold mb-2">באילו ימים?</div>
+      <div class="flex flex-wrap gap-2" id="ימים" role="group" aria-label="ימי עבודה"></div>
+    </div>
+
+    <!-- מחזורים -->
+    <div>
+      <div class="font-semibold mb-1">המחזורים ביום (כל 5 שעות)</div>
+      <p class="hint mb-3">אפשר לכבות מחזור שאתה לא צריך, למשל את הלחיצה של הלילה.</p>
+      <div class="sub overflow-hidden">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-xs text-muted text-right">
+              <th class="font-semibold px-3 py-2">מחזור</th>
+              <th class="font-semibold px-3 py-2">החלון</th>
+              <th class="font-semibold px-3 py-2">שעת שליחה</th>
+              <th class="font-semibold px-3 py-2 text-left">פעיל</th>
+            </tr>
+          </thead>
+          <tbody id="טבלת-מחזורים"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <details>
+      <summary class="text-sm">הצג את שורות התזמון שיישמרו בגיטהאב (לבדיקה)</summary>
+      <p class="hint mt-2">גיטהאב מתזמן לפי השעון העולמי. לכל שעה יש שורה לשעון חורף ושורה לשעון קיץ, וההרצה עצמה בודקת איזה שעון בתוקף.</p>
+      <pre id="תצוגת-תזמון" class="code mt-2" dir="ltr"></pre>
+    </details>
+  </section>
+
+  <p class="text-xs text-muted text-center leading-6">
+    אין בדף הזה שום מידע אישי. ההגדרות שמורות במאגר הפרטי שלך, ופרטי החיבור נשמרים רק בדפדפן הזה.
+  </p>
+</main>
+
+<!-- ===== פס שמירה ===== -->
+<div class="savebar">
+  <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+    <div id="מצב-שמירה" class="text-sm text-secondary min-w-0"></div>
+    <button id="כפתור-שמירה" class="btn btn-primary whitespace-nowrap">שמור ועדכן תזמון בענן</button>
+  </div>
+</div>
+
+<!-- ===== חלונית חיבור לגיטהאב ===== -->
+<div id="חלונית-חיבור" class="modal-bg" hidden>
+  <div class="card w-full max-w-lg p-5 mt-8" role="dialog" aria-modal="true" aria-labelledby="כותרת-חיבור">
+    <div class="flex items-center justify-between mb-4">
+      <h2 id="כותרת-חיבור" class="section-title">חיבור לגיטהאב</h2>
+      <button class="btn btn-icon" data-action="סגור-חיבור" aria-label="סגירה">✕</button>
+    </div>
+    <div class="space-y-3">
+      <label class="block">
+        <span class="text-sm font-semibold block mb-1">שם המשתמש בגיטהאב</span>
+        <input id="שדה-בעלים" type="text" class="w-full" dir="ltr" autocomplete="off" spellcheck="false">
+      </label>
+      <label class="block">
+        <span class="text-sm font-semibold block mb-1">שם המאגר הפרטי</span>
+        <input id="שדה-מאגר" type="text" class="w-full" dir="ltr" autocomplete="off" spellcheck="false">
+      </label>
+      <label class="block">
+        <span class="text-sm font-semibold block mb-1">מפתח גישה</span>
+        <div class="flex gap-2">
+          <input id="שדה-מפתח" type="password" class="w-full" dir="ltr" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+          <button class="btn whitespace-nowrap" data-action="הצג-מפתח" type="button">הצג</button>
+        </div>
+      </label>
+      <p class="hint">המפתח נשמר רק בדפדפן הזה. בכל מכשיר חדש (למשל בטלפון) צריך להזין אותו פעם אחת.</p>
+      <div id="תוצאת-בדיקה" class="text-sm" aria-live="polite"></div>
+      <div class="flex flex-wrap gap-2 pt-1">
+        <button class="btn btn-primary" data-action="שמור-חיבור">שמור ובדוק חיבור</button>
+        <button class="btn" data-action="נתק">ניתוק ומחיקת המפתח</button>
+      </div>
+      <details class="pt-2">
+        <summary class="text-sm">איך יוצרים מפתח גישה?</summary>
+        <ol class="hint mt-2 list-decimal pr-5 space-y-1">
+          <li>היכנס לכתובת: <a class="link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">יצירת מפתח גישה חדש</a>.</li>
+          <li>בשדה <b dir="ltr">Token name</b> כתוב: ניצול קלוד.</li>
+          <li>בשדה <b dir="ltr">Expiration</b> בחר תוקף, למשל שנה.</li>
+          <li>תחת <b dir="ltr">Repository access</b> בחר <b dir="ltr">Only select repositories</b>, ובחר את המאגר הפרטי בלבד.</li>
+          <li>תחת <b dir="ltr">Permissions</b> הוסף שלוש הרשאות, וקבע לכל אחת <b dir="ltr">Read and write</b>: <b dir="ltr">Actions</b>, <b dir="ltr">Contents</b>, <b dir="ltr">Workflows</b>.</li>
+          <li>לחץ על <b dir="ltr">Generate token</b>, העתק את המפתח והדבק אותו כאן.</li>
+        </ol>
+      </details>
+    </div>
+  </div>
+</div>
+
+<div id="בועה" class="tooltip" role="tooltip" hidden></div>
+<div id="הודעה" class="toast" role="status" aria-live="polite" hidden>
+  <span id="הודעה-סמל" aria-hidden="true"></span>
+  <span id="הודעה-טקסט" class="flex-1"></span>
+  <button class="text-muted" data-action="סגור-הודעה" aria-label="סגירת ההודעה">✕</button>
+</div>
+
+<script>
+'use strict';
+
+// =====================================================================
+// קבועים
+// =====================================================================
+const שם_קובץ_תזמון = 'wakeup.yml';
+const נתיב_תזמון = '.github/workflows/wakeup.yml';
+const נתיב_הגדרות = 'הגדרות.json';
+const נתיב_מצב = 'מצב.json';
+const ענף = 'main';
+const דקות_ביממה = 1440;
+const ימים_קצר = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'];
+const ימים_מלא = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+const עונות = [
+  { שם: 'חורף', היסט_בדקות: 120, תווית: 'שעון חורף (UTC+2)' },
+  { שם: 'קיץ', היסט_בדקות: 180, תווית: 'שעון קיץ (UTC+3)' },
+];
+const מפתחות_אחסון = {
+  חיבור: 'ניצול-קלוד:חיבור',
+  ערכה: 'ניצול-קלוד:ערכת-נושא',
+  טיוטה: 'ניצול-קלוד:הגדרות-אחרונות',
+};
+const חיבור_ברירת_מחדל = { בעלים: 'Mat-76', מאגר: 'claude-cycle-manager', מפתח: '' };
+const ברירות_מחדל = {
+  שעת_תחילת_עבודה: '09:00',
+  הקדמה_בשעות: 2.5,
+  מרווח_בשעות: 5,
+  דקות_שליחה_מוקדמת: 9,
+  מחזורים_פעילים: [true, true, true, true],
+  ימים: [0, 1, 2, 3, 4],
+};
+
+// =====================================================================
+// מצב הדף
+// =====================================================================
+let הגדרות = העתק(ברירות_מחדל);
+let חתימה_שמורה = null;   // ההגדרות כפי שהן שמורות בענן (להשוואה)
+let מצב_ענן = null;       // תוכן קובץ המצב: מתי נפתח החלון האחרון
+let הרצה_אחרונה = null;   // ההרצה האחרונה של התהליך בגיטהאב
+let שגיאת_סטטוס = null;
+let טיימר_רענון = null;
+let טיימר_הודעה = null;
+
+const $ = (מזהה) => document.getElementById(מזהה);
+function העתק(ערך) { return JSON.parse(JSON.stringify(ערך)); }
+
+// =====================================================================
+// אחסון בדפדפן (עטוף בהגנה, כי לפעמים הוא חסום)
+// =====================================================================
+function אחסון_קרא(מפתח, ברירה) {
+  try { const ערך = localStorage.getItem(מפתח); return ערך ? JSON.parse(ערך) : ברירה; } catch { return ברירה; }
+}
+function אחסון_כתוב(מפתח, ערך) {
+  try { localStorage.setItem(מפתח, JSON.stringify(ערך)); } catch { /* לא נורא */ }
+}
+function אחסון_מחק(מפתח) { try { localStorage.removeItem(מפתח); } catch { /* לא נורא */ } }
+
+function קרא_חיבור() { return { ...חיבור_ברירת_מחדל, ...אחסון_קרא(מפתחות_אחסון.חיבור, {}) }; }
+function מחובר() { const ח = קרא_חיבור(); return Boolean(ח.מפתח && ח.בעלים && ח.מאגר); }
+
+// =====================================================================
+// עזרי זמן
+// =====================================================================
+const שתי_ספרות = (מספר) => String(מספר).padStart(2, '0');
+function לדקות(שעה) { const [ש, ד] = שעה.split(':').map(Number); return ש * 60 + ד; }
+function לשעה(דקות) {
+  const ד = ((Math.round(דקות) % דקות_ביממה) + דקות_ביממה) % דקות_ביממה;
+  return `${שתי_ספרות(Math.floor(ד / 60))}:${שתי_ספרות(ד % 60)}`;
+}
+
+const פורמט_ישראל = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Jerusalem', weekday: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
+});
+const מספרי_ימים = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+// השעה והיום עכשיו בישראל, בלי קשר לאזור הזמן של המכשיר
+function זמן_ישראל(תאריך = new Date()) {
+  const חלקים = Object.fromEntries(פורמט_ישראל.formatToParts(תאריך).map((ח) => [ח.type, ח.value]));
+  return { יום: מספרי_ימים[חלקים.weekday], דקות: Number(חלקים.hour) * 60 + Number(חלקים.minute), שניות: Number(חלקים.second) };
+}
+const פורמט_שעה_ישראל = new Intl.DateTimeFormat('he-IL', { timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+function שעה_ישראל(תאריך) { return פורמט_שעה_ישראל.format(new Date(תאריך)); }
+function יום_ושעה(תאריך) {
+  const ז = זמן_ישראל(new Date(תאריך));
+  return `יום ${ימים_מלא[ז.יום]} ${שעה_ישראל(תאריך)}`;
+}
+const זמן_יחסי = new Intl.RelativeTimeFormat('he', { numeric: 'auto' });
+function לפני_כמה(תאריך) {
+  const שניות = Math.round((new Date(תאריך).getTime() - Date.now()) / 1000);
+  const מוחלט = Math.abs(שניות);
+  if (מוחלט < 60) return זמן_יחסי.format(Math.round(שניות), 'second');
+  if (מוחלט < 3600) return זמן_יחסי.format(Math.round(שניות / 60), 'minute');
+  if (מוחלט < 86400) return זמן_יחסי.format(Math.round(שניות / 3600), 'hour');
+  return זמן_יחסי.format(Math.round(שניות / 86400), 'day');
+}
+function טקסט_שעות(שעות) {
+  const שלם = Math.floor(שעות + 1e-9);
+  const חצי = שעות - שלם >= 0.5 - 1e-9;
+  const בסיס = { 0: '', 1: 'שעה', 2: 'שעתיים' }[שלם] ?? `${שלם} שעות`;
+  if (!בסיס) return חצי ? 'חצי שעה' : 'אפס שעות';
+  return חצי ? `${בסיס} וחצי` : בסיס;
+}
+// טווח שעות שנשאר בסדר הנכון (משמאל לימין) גם בתוך טקסט בעברית
+const טווח = (מ, עד) => `⁦${מ}–${עד}⁩`;
+function רשימת_ב(שעות) {
+  if (שעות.length === 1) return `ב-${שעות[0]}`;
+  return שעות.slice(0, -1).map((ש) => `ב-${ש}`).join(', ') + ` וב-${שעות[שעות.length - 1]}`;
+}
+
+// =====================================================================
+// חישוב המחזורים
+// =====================================================================
+// מחזיר את כל המחזורים ביום: מהחלון הראשון ועד האחרון שמתחיל לפני חצות
+function חשב_מחזורים(ה = הגדרות) {
+  const מרווח = Math.round(ה.מרווח_בשעות * 60);
+  let ראשון = לדקות(ה.שעת_תחילת_עבודה) - Math.round(ה.הקדמה_בשעות * 60);
+  if (ראשון < 0) ראשון += דקות_ביממה;
+  const רשימה = [];
+  for (let התחלה = ראשון, אינדקס = 0; התחלה < דקות_ביממה; התחלה += מרווח, אינדקס++) {
+    רשימה.push({
+      אינדקס,
+      מספר: אינדקס + 1,
+      תחילה: התחלה,
+      סוף: התחלה + מרווח,
+      שליחה: התחלה - ה.דקות_שליחה_מוקדמת,
+      פעיל: ה.מחזורים_פעילים[אינדקס] !== false,
+    });
+  }
+  return רשימה;
+}
+
+// דחיסת רשימת ימים לכתיב של תזמון: [0,1,2,3,4] ← "0-4"
+function דחוס_ימים(ימים) {
+  const ממוין = [...new Set(ימים)].sort((א, ב) => א - ב);
+  const קטעים = [];
+  for (let i = 0; i < ממוין.length;) {
+    let j = i;
+    while (j + 1 < ממוין.length && ממוין[j + 1] === ממוין[j] + 1) j++;
+    קטעים.push(j - i >= 2 ? `${ממוין[i]}-${ממוין[j]}` : ממוין.slice(i, j + 1).join(','));
+    i = j + 1;
+  }
+  return קטעים.join(',');
+}
+
+// בניית שורות התזמון לפי השעון העולמי, בנפרד לשעון חורף ולשעון קיץ
+function בנה_קרון(ה = הגדרות) {
+  const פעילים = חשב_מחזורים(ה).filter((מ) => מ.פעיל);
+  const תוצאה = {};
+  for (const עונה of עונות) {
+    const קבוצות = new Map();
+    for (const מ of פעילים) {
+      const עולמי = מ.שליחה - עונה.היסט_בדקות;
+      const הזזת_יום = Math.floor(עולמי / דקות_ביממה);
+      const דקות_עולמי = ((עולמי % דקות_ביממה) + דקות_ביממה) % דקות_ביממה;
+      const שעה = Math.floor(דקות_עולמי / 60);
+      const דקה = דקות_עולמי % 60;
+      const ימים = דחוס_ימים(ה.ימים.map((י) => (((י + הזזת_יום) % 7) + 7) % 7));
+      const מפתח = `${דקה}|${ימים}`;
+      if (!קבוצות.has(מפתח)) קבוצות.set(מפתח, new Set());
+      קבוצות.get(מפתח).add(שעה);
+    }
+    תוצאה[עונה.שם] = [...קבוצות.entries()].map(([מפתח, שעות]) => {
+      const [דקה, ימים] = מפתח.split('|');
+      return `${דקה} ${[...שעות].sort((א, ב) => א - ב).join(',')} * * ${ימים}`;
+    });
+  }
+  return תוצאה;
+}
+
+function בנה_בלוק_תזמון(הזחה = '    ') {
+  const קרון = בנה_קרון();
+  const שעות = חשב_מחזורים().filter((מ) => מ.פעיל).map((מ) => לשעה(מ.שליחה)).join(', ');
+  const שורות = [`${הזחה}# >>> תזמון אוטומטי`];
+  for (const עונה of עונות) {
+    שורות.push(`${הזחה}# ${עונה.תווית} - שעות שליחה לפי שעון ישראל: ${שעות}`);
+    for (const ק of קרון[עונה.שם]) שורות.push(`${הזחה}- cron: '${ק}'`);
+  }
+  שורות.push(`${הזחה}# <<< סוף תזמון אוטומטי`);
+  return שורות.join('\n');
+}
+
+// החלפת שורות התזמון בקובץ התהליך, בין שורות הסימון בלבד
+function החלף_בלוק(תוכן) {
+  const שורות = תוכן.split('\n');
+  const התחלה = שורות.findIndex((ש) => ש.includes('# >>> תזמון אוטומטי'));
+  const סוף = שורות.findIndex((ש) => ש.includes('# <<< סוף תזמון אוטומטי'));
+  if (התחלה < 0 || סוף < התחלה) throw new Error('לא נמצאו שורות הסימון של התזמון בקובץ התהליך במאגר.');
+  const הזחה = שורות[התחלה].match(/^\s*/)[0];
+  return [...שורות.slice(0, התחלה), בנה_בלוק_תזמון(הזחה), ...שורות.slice(סוף + 1)].join('\n');
+}
+
+function בנה_קובץ_הגדרות() {
+  return {
+    שעת_תחילת_עבודה: הגדרות.שעת_תחילת_עבודה,
+    הקדמה_בשעות: הגדרות.הקדמה_בשעות,
+    מרווח_בשעות: הגדרות.מרווח_בשעות,
+    דקות_שליחה_מוקדמת: הגדרות.דקות_שליחה_מוקדמת,
+    מחזורים_פעילים: חשב_מחזורים().map((מ) => מ.פעיל),
+    ימים: [...הגדרות.ימים].sort((א, ב) => א - ב),
+    קרון: בנה_קרון(),
+  };
+}
+function חתימה(ה) {
+  return JSON.stringify([ה.שעת_תחילת_עבודה, ה.הקדמה_בשעות, ה.דקות_שליחה_מוקדמת, חשב_מחזורים(ה).map((מ) => מ.פעיל), [...ה.ימים].sort()]);
+}
+function נרמל(ה) {
+  const נקי = { ...העתק(ברירות_מחדל), ...ה };
+  delete נקי.קרון;
+  if (!Array.isArray(נקי.ימים)) נקי.ימים = [...ברירות_מחדל.ימים];
+  if (!Array.isArray(נקי.מחזורים_פעילים)) נקי.מחזורים_פעילים = [];
+  return נקי;
+}
+function בדוק_תקינות() {
+  if (!הגדרות.ימים.length) return 'צריך לבחור לפחות יום אחד.';
+  if (!חשב_מחזורים().some((מ) => מ.פעיל)) return 'צריך להשאיר לפחות מחזור אחד פעיל.';
+  return null;
+}
+
+// =====================================================================
+// ספירה לאחור
+// =====================================================================
+function חשב_ספירה() {
+  const עכשיו = זמן_ישראל();
+  const שניות_עכשיו = עכשיו.דקות * 60 + עכשיו.שניות;
+
+  // 1. חלון פעיל לפי קובץ המצב (המידע המדויק ביותר)
+  if (מצב_ענן?.סוף_חלון && מצב_ענן?.תחילת_חלון) {
+    const התחלה = new Date(מצב_ענן.תחילת_חלון).getTime();
+    const סוף = new Date(מצב_ענן.סוף_חלון).getTime();
+    if (Date.now() < סוף && Date.now() >= התחלה - 10 * 60000) {
+      return { סוג: 'פעיל', שניות: (סוף - Date.now()) / 1000, אחוז: Math.max(0, Math.min(1, (Date.now() - התחלה) / (סוף - התחלה))),
+        פירוט: `חלון פעיל: ${טווח(שעה_ישראל(התחלה), שעה_ישראל(סוף))} (לפי הפינג האחרון)` };
+    }
+  }
+
+  const מחזורים = חשב_מחזורים().filter((מ) => מ.פעיל);
+  if (!מחזורים.length || !הגדרות.ימים.length) return null;
+
+  // 2. חלון פעיל לפי לוח הזמנים (היום, או המשך מהערב הקודם)
+  const אתמול = (עכשיו.יום + 6) % 7;
+  for (const מ of מחזורים) {
+    const היום_פעיל = הגדרות.ימים.includes(עכשיו.יום) && מ.תחילה * 60 <= שניות_עכשיו && שניות_עכשיו < מ.סוף * 60;
+    const המשך_מאתמול = הגדרות.ימים.includes(אתמול) && מ.סוף > דקות_ביממה && שניות_עכשיו < (מ.סוף - דקות_ביממה) * 60;
+    if (היום_פעיל || המשך_מאתמול) {
+      const סוף_בשניות = היום_פעיל ? מ.סוף * 60 : (מ.סוף - דקות_ביממה) * 60;
+      const שעבר = מ.סוף * 60 - מ.תחילה * 60 - (סוף_בשניות - שניות_עכשיו);
+      return { סוג: 'פעיל', שניות: סוף_בשניות - שניות_עכשיו, אחוז: שעבר / ((מ.סוף - מ.תחילה) * 60),
+        פירוט: `חלון ${טווח(לשעה(מ.תחילה), לשעה(מ.סוף))} (לפי לוח הזמנים)` };
+    }
+  }
+
+  // 3. החלון הבא שייפתח
+  for (let ימים_קדימה = 0; ימים_קדימה <= 7; ימים_קדימה++) {
+    const יום = (עכשיו.יום + ימים_קדימה) % 7;
+    if (!הגדרות.ימים.includes(יום)) continue;
+    for (const מ of מחזורים) {
+      const יעד = (ימים_קדימה * דקות_ביממה + מ.תחילה) * 60;
+      if (יעד > שניות_עכשיו) {
+        const מתי = ימים_קדימה === 0 ? 'היום' : ימים_קדימה === 1 ? 'מחר' : `ביום ${ימים_מלא[יום]}`;
+        return { סוג: 'הבא', שניות: יעד - שניות_עכשיו, פירוט: `${מתי} ב-${לשעה(מ.תחילה)} · הלחיצה תישלח ב-${לשעה(מ.שליחה)}` };
+      }
+    }
+  }
+  return null;
+}
+
+function פורמט_ספירה(שניות) {
+  const ש = Math.max(0, Math.floor(שניות));
+  return `${שתי_ספרות(Math.floor(ש / 3600))}:${שתי_ספרות(Math.floor((ש % 3600) / 60))}:${שתי_ספרות(ש % 60)}`;
+}
+
+function עדכן_ספירה() {
+  const ס = חשב_ספירה();
+  if (!ס) {
+    $('ספירה-כותרת').textContent = 'אין מחזורים פעילים';
+    $('ספירה').textContent = '--:--:--';
+    $('ספירה-פירוט').textContent = 'הפעל לפחות מחזור אחד ויום אחד.';
+    $('התקדמות-עוטף').hidden = true;
+  } else {
+    $('ספירה-כותרת').textContent = ס.סוג === 'פעיל' ? 'האיפוס הבא בעוד' : 'החלון הבא נפתח בעוד';
+    $('ספירה').textContent = פורמט_ספירה(ס.שניות);
+    $('ספירה-פירוט').textContent = ס.פירוט;
+    $('התקדמות-עוטף').hidden = ס.סוג !== 'פעיל';
+    if (ס.סוג === 'פעיל') $('התקדמות').style.width = `${(ס.אחוז * 100).toFixed(2)}%`;
+  }
+  $('מקרא-עכשיו').textContent = `עכשיו (${לשעה(זמן_ישראל().דקות)})`;
+}
+
+// =====================================================================
+// ציור: הגדרות
+// =====================================================================
+function צייר_הגדרות() {
+  const [שעה, דקות] = הגדרות.שעת_תחילת_עבודה.split(':');
+  $('בחירת-שעה').value = שעה;
+  $('בחירת-דקות').value = דקות;
+
+  $('סרגל-הקדמה').value = הגדרות.הקדמה_בשעות;
+  $('ערך-הקדמה').textContent = הגדרות.הקדמה_בשעות === 0 ? 'בדיוק בתחילת העבודה' : `${טקסט_שעות(הגדרות.הקדמה_בשעות)} לפני`;
+  for (const כפתור of $('קיצורי-הקדמה').children) {
+    כפתור.setAttribute('aria-pressed', String(Number(כפתור.dataset.value) === הגדרות.הקדמה_בשעות));
+  }
+
+  $('סרגל-מוקדם').value = הגדרות.דקות_שליחה_מוקדמת;
+  $('ערך-מוקדם').textContent = הגדרות.דקות_שליחה_מוקדמת === 0 ? 'בדיוק בזמן' : `${הגדרות.דקות_שליחה_מוקדמת} דקות לפני`;
+
+  for (const כפתור of $('ימים').children) {
+    כפתור.setAttribute('aria-pressed', String(הגדרות.ימים.includes(Number(כפתור.dataset.day))));
+  }
+
+  const גוף = $('טבלת-מחזורים');
+  גוף.replaceChildren();
+  for (const מ of חשב_מחזורים()) {
+    const שורה = document.createElement('tr');
+    שורה.style.borderTop = '1px solid var(--border)';
+    if (!מ.פעיל) שורה.style.color = 'var(--text-muted)';
+    שורה.innerHTML = `
+      <td class="px-3 py-2.5 font-semibold">${מ.מספר}</td>
+      <td class="px-3 py-2.5 num" dir="ltr" style="text-align:right">${לשעה(מ.תחילה)}–${לשעה(מ.סוף)}</td>
+      <td class="px-3 py-2.5 num">${לשעה(מ.שליחה)}</td>
+      <td class="px-3 py-2.5"><div class="flex justify-end"></div></td>`;
+    const מתג = document.createElement('button');
+    מתג.className = 'switch';
+    מתג.setAttribute('role', 'switch');
+    מתג.setAttribute('aria-checked', String(מ.פעיל));
+    מתג.setAttribute('aria-label', `מחזור ${מ.מספר}, חלון ${לשעה(מ.תחילה)}`);
+    מתג.addEventListener('click', () => {
+      const רשימה = חשב_מחזורים().map((x) => x.פעיל);
+      רשימה[מ.אינדקס] = !רשימה[מ.אינדקס];
+      הגדרות.מחזורים_פעילים = רשימה;
+      שינוי();
+    });
+    שורה.querySelector('td:last-child div').append(מתג);
+    גוף.append(שורה);
+  }
+
+  $('תצוגת-תזמון').textContent = בנה_בלוק_תזמון('');
+}
+
+// =====================================================================
+// ציור: ציר הזמן וסיכום
+// =====================================================================
+const אחוז = (דקות) => (דקות / דקות_ביממה) * 100;
+
+function חבר_בועה(אלמנט, טקסט) {
+  אלמנט.tabIndex = 0;
+  const הצג = () => הצג_בועה(טקסט, אלמנט);
+  אלמנט.addEventListener('pointerenter', הצג);
+  אלמנט.addEventListener('focus', הצג);
+  אלמנט.addEventListener('pointerleave', הסתר_בועה);
+  אלמנט.addEventListener('blur', הסתר_בועה);
+}
+function הצג_בועה(טקסט, אלמנט) {
+  const בועה = $('בועה');
+  בועה.textContent = טקסט;
+  בועה.hidden = false;
+  const מלבן = אלמנט.getBoundingClientRect();
+  const גודל = בועה.getBoundingClientRect();
+  let x = מלבן.left + מלבן.width / 2 - גודל.width / 2;
+  x = Math.max(8, Math.min(window.innerWidth - גודל.width - 8, x));
+  let y = מלבן.top - גודל.height - 8;
+  if (y < 8) y = מלבן.bottom + 8;
+  בועה.style.left = `${x}px`;
+  בועה.style.top = `${y}px`;
+}
+function הסתר_בועה() { $('בועה').hidden = true; }
+
+function צייר_ציר() {
+  const ציר = $('ציר');
+  ציר.replaceChildren();
+  const הוסף = (מחלקה, סגנון = {}, טקסט = '') => {
+    const א = document.createElement('div');
+    א.className = מחלקה;
+    Object.assign(א.style, סגנון);
+    if (טקסט) א.textContent = טקסט;
+    ציר.append(א);
+    return א;
+  };
+
+  // רקע וקווי עזר כל 3 שעות
+  הוסף('tl-track');
+  for (let ש = 3; ש < 24; ש += 3) הוסף('tl-grid', { right: `${אחוז(ש * 60)}%` });
+
+  // חלונות 5 השעות (מימין לשמאל: 00:00 בצד ימין)
+  const מחזורים = חשב_מחזורים();
+  for (const מ of מחזורים) {
+    const קטעים = מ.סוף <= דקות_ביממה
+      ? [[מ.תחילה, מ.סוף, false]]
+      : [[מ.תחילה, דקות_ביממה, false], [0, מ.סוף - דקות_ביממה, true]];
+    for (const [מ_דקה, עד_דקה, המשך] of קטעים) {
+      const קטע = הוסף(`tl-seg ${מ.פעיל ? 'on' : 'off'}${המשך ? ' spill' : ''}`, {
+        right: `calc(${אחוז(מ_דקה)}% + 1px)`,
+        width: `calc(${אחוז(עד_דקה - מ_דקה)}% - 2px)`,
+        zIndex: המשך ? 0 : 1,
+      }, המשך ? '' : לשעה(מ.תחילה));
+      const תיאור = המשך
+        ? `המשך החלון של ${לשעה(מ.תחילה)} מהערב הקודם, עד ${לשעה(מ.סוף)}`
+        : `מחזור ${מ.מספר}: חלון ${טווח(לשעה(מ.תחילה), לשעה(מ.סוף))}` + (מ.פעיל ? ` · לחיצה אוטומטית ב-${לשעה(מ.שליחה)}` : ' · כבוי, לא תישלח לחיצה');
+      חבר_בועה(קטע, תיאור);
+    }
+    // נקודת הלחיצה
+    const נקודה = הוסף(`tl-mark${מ.פעיל ? '' : ' off'}`, { right: `${אחוז(((מ.שליחה % דקות_ביממה) + דקות_ביממה) % דקות_ביממה)}%` });
+    נקודה.innerHTML = '<span class="tl-dot"></span>';
+    חבר_בועה(נקודה, מ.פעיל ? `לחיצה אוטומטית ב-${לשעה(מ.שליחה)} (פותחת את החלון של ${לשעה(מ.תחילה)})` : `לחיצה כבויה (${לשעה(מ.שליחה)})`);
+  }
+
+  // תחילת עבודה
+  const עבודה = לדקות(הגדרות.שעת_תחילת_עבודה);
+  הוסף('tl-work', { right: `${אחוז(עבודה)}%`, zIndex: 3 });
+  const תווית = הוסף('tl-work-label', { right: `${Math.max(7, Math.min(93, אחוז(עבודה)))}%` }, `תחילת עבודה ${הגדרות.שעת_תחילת_עבודה}`);
+  תווית.style.zIndex = 3;
+
+  // עכשיו
+  הוסף('tl-now', { right: `calc(${אחוז(זמן_ישראל().דקות)}% - 1px)`, zIndex: 4 }).id = 'ציר-עכשיו';
+
+  // שעות על הציר
+  for (let ש = 0; ש <= 24; ש += 3) {
+    const תג = הוסף('tl-axis num', { right: `${אחוז(ש * 60)}%` }, שתי_ספרות(ש));
+    if (ש === 0) תג.style.transform = 'translateX(0)';
+    if (ש === 24) תג.style.transform = 'translateX(100%)';
+  }
+}
+
+function צייר_סיכום() {
+  const מחזורים = חשב_מחזורים();
+  const פעילים = מחזורים.filter((מ) => מ.פעיל);
+  const ראשון = מחזורים[0];
+  const יעד = $('סיכום');
+  if (!פעילים.length) { יעד.textContent = 'כל המחזורים כבויים, ולכן לא תישלח שום לחיצה אוטומטית.'; return; }
+  const חלקים = [`<b>תחילת עבודה:</b> <span class="num">${הגדרות.שעת_תחילת_עבודה}</span>`];
+  if (ראשון.פעיל) {
+    חלקים.push(`<b>לחיצה ראשונה:</b> <span class="num">${לשעה(ראשון.שליחה)}</span> (החלון נפתח ב-<span class="num">${לשעה(ראשון.תחילה)}</span>)`);
+    const יתרה = (ראשון.סוף - לדקות(הגדרות.שעת_תחילת_עבודה)) / 60;
+    const איפוסים = פעילים.filter((מ) => מ !== ראשון).map((מ) => לשעה(מ.תחילה));
+    let משפט = `אתה מתחיל לעבוד עם <b>${טקסט_שעות(יתרה)}</b> שנותרו בחלון`;
+    if (איפוסים.length) משפט += `, ומקבל איפוס מלא <b class="num">${רשימת_ב(איפוסים)}</b>`;
+    חלקים.push(משפט);
+  } else {
+    חלקים.push('הלחיצה של הבוקר כבויה, ולכן החלון הראשון ייפתח רק כשתשלח לקלוד את ההודעה הראשונה שלך');
+  }
+  חלקים.push(`<b>ימים:</b> ${הגדרות.ימים.length === 7 ? 'כל השבוע' : [...הגדרות.ימים].sort().map((י) => ימים_קצר[י]).join(' ')}`);
+  יעד.innerHTML = חלקים.join(' <span class="text-muted">|</span> ');
+}
+
+// =====================================================================
+// ציור: מצב בגיטהאב ופס השמירה
+// =====================================================================
+function תיאור_הרצה(הרצה) {
+  if (הרצה.status !== 'completed') {
+    const רצה = הרצה.status === 'in_progress';
+    return { מחלקה: 'status-warning', סמל: '<span class="spin">⟳</span>', טקסט: רצה ? 'רצה עכשיו' : 'ממתינה בתור' };
+  }
+  switch (הרצה.conclusion) {
+    case 'success': return { מחלקה: 'status-good', סמל: '✓', טקסט: 'הסתיימה בהצלחה' };
+    case 'failure': return { מחלקה: 'status-critical', סמל: '✕', טקסט: 'נכשלה' };
+    case 'timed_out': return { מחלקה: 'status-critical', סמל: '✕', טקסט: 'חרגה מהזמן' };
+    case 'cancelled': return { מחלקה: 'status-muted', סמל: '–', טקסט: 'בוטלה' };
+    default: return { מחלקה: 'status-muted', סמל: '–', טקסט: 'דולגה' };
+  }
+}
+
+function צייר_מצב() {
+  const יש_חיבור = מחובר();
+  $('פס-לא-מחובר').hidden = יש_חיבור;
+
+  // ההרצה האחרונה
+  const יעד_הרצה = $('הרצה-אחרונה');
+  if (!יש_חיבור) יעד_הרצה.innerHTML = '<span class="text-muted">לא מחובר</span>';
+  else if (שגיאת_סטטוס) יעד_הרצה.innerHTML = `<span class="status status-critical">✕ ${שגיאת_סטטוס}</span>`;
+  else if (!הרצה_אחרונה) יעד_הרצה.innerHTML = '<span class="text-muted">עוד לא הייתה הרצה</span>';
+  else {
+    const ת = תיאור_הרצה(הרצה_אחרונה);
+    const זמן = הרצה_אחרונה.run_started_at || הרצה_אחרונה.created_at;
+    const סוג = הרצה_אחרונה.event === 'schedule' ? 'מתוזמנת' : 'ידנית';
+    יעד_הרצה.innerHTML = `<span class="status ${ת.מחלקה}">${ת.סמל} ${ת.טקסט}</span>
+      <div class="text-secondary mt-0.5">${סוג} · ${יום_ושעה(זמן)} · ${לפני_כמה(זמן)}</div>
+      <a class="link text-xs" href="${הרצה_אחרונה.html_url}" target="_blank" rel="noopener">פתח בגיטהאב</a>`;
+  }
+
+  // הפינג האחרון שפתח חלון
+  const יעד_פינג = $('פינג-אחרון');
+  if (!יש_חיבור) יעד_פינג.innerHTML = '<span class="text-muted">לא מחובר</span>';
+  else if (!מצב_ענן?.פינג_אחרון) יעד_פינג.innerHTML = '<span class="text-muted">עוד לא נשלח פינג</span>';
+  else {
+    const מקור = מצב_ענן.מקור === 'ידני' ? 'ידני' : 'מתוזמן';
+    יעד_פינג.innerHTML = `<div class="font-semibold">${יום_ושעה(מצב_ענן.פינג_אחרון)} <span class="text-secondary font-normal">(${מקור})</span></div>
+      <div class="text-secondary mt-0.5">חלון <span class="num">${טווח(שעה_ישראל(מצב_ענן.תחילת_חלון), שעה_ישראל(מצב_ענן.סוף_חלון))}</span> · ${לפני_כמה(מצב_ענן.פינג_אחרון)}</div>`;
+  }
+  צייר_פס_שמירה();
+}
+
+function צייר_פס_שמירה() {
+  const יעד = $('מצב-שמירה');
+  const כפתור = $('כפתור-שמירה');
+  if (!מחובר()) {
+    יעד.textContent = 'כדי לשמור בענן, צריך קודם להתחבר לגיטהאב.';
+    כפתור.textContent = 'התחברות';
+    return;
+  }
+  כפתור.textContent = 'שמור ועדכן תזמון בענן';
+  if (חתימה_שמורה === null) יעד.textContent = 'טוען הגדרות מהענן…';
+  else if (חתימה(הגדרות) !== חתימה_שמורה) { יעד.innerHTML = '<span class="status status-warning">● יש שינויים שלא נשמרו</span>'; }
+  else יעד.innerHTML = '<span class="status status-good">✓ התזמון בענן מעודכן</span>';
+}
+
+function צייר_הכל() {
+  צייר_הגדרות();
+  צייר_ציר();
+  צייר_סיכום();
+  צייר_מצב();
+  עדכן_ספירה();
+}
+
+function שינוי() {
+  אחסון_כתוב(מפתחות_אחסון.טיוטה, הגדרות);
+  צייר_הכל();
+}
+
+// =====================================================================
+// הודעות למשתמש
+// =====================================================================
+function הודעה(טקסט, סוג = 'מידע') {
+  const סמלים = { הצלחה: ['✓', 'status-good'], שגיאה: ['✕', 'status-critical'], מידע: ['ℹ', 'status-muted'] };
+  const [סמל, מחלקה] = סמלים[סוג] || סמלים.מידע;
+  $('הודעה-סמל').textContent = סמל;
+  $('הודעה-סמל').className = `status ${מחלקה}`;
+  $('הודעה-טקסט').textContent = טקסט;
+  $('הודעה').hidden = false;
+  clearTimeout(טיימר_הודעה);
+  טיימר_הודעה = setTimeout(() => { $('הודעה').hidden = true; }, סוג === 'שגיאה' ? 12000 : 6000);
+}
+
+// =====================================================================
+// גיטהאב
+// =====================================================================
+class שגיאת_גיטהאב extends Error {
+  constructor(סטטוס, פירוט) { super(פירוט); this.סטטוס = סטטוס; }
+}
+function בסיס_מאגר(ח = קרא_חיבור()) { return `/repos/${encodeURIComponent(ח.בעלים)}/${encodeURIComponent(ח.מאגר)}`; }
+const קודד_נתיב = (נתיב) => נתיב.split('/').map(encodeURIComponent).join('/');
+
+async function גיטהאב(נתיב, { שיטה = 'GET', גוף, חיבור } = {}) {
+  const ח = חיבור || קרא_חיבור();
+  const תשובה = await fetch(`https://api.github.com${נתיב}`, {
+    method: שיטה,
+    cache: 'no-store',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${ח.מפתח}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+      ...(גוף ? { 'Content-Type': 'application/json' } : {}),
+    },
+    body: גוף ? JSON.stringify(גוף) : undefined,
+  });
+  if (!תשובה.ok) {
+    let פירוט = '';
+    try { פירוט = (await תשובה.json()).message || ''; } catch { /* אין פירוט */ }
+    throw new שגיאת_גיטהאב(תשובה.status, פירוט);
+  }
+  return תשובה.status === 204 ? null : תשובה.json();
+}
+
+function הסבר_שגיאה(שגיאה) {
+  if (שגיאה instanceof שגיאת_גיטהאב) {
+    if (שגיאה.סטטוס === 401) return 'מפתח הגישה שגוי או שפג תוקפו. עדכן אותו בהגדרות החיבור (גלגל השיניים).';
+    if (שגיאה.סטטוס === 403) return 'למפתח הגישה חסרות הרשאות. צריך הרשאות קריאה וכתיבה ל-Actions, Contents ו-Workflows.';
+    if (שגיאה.סטטוס === 404) return 'המאגר או הקובץ לא נמצאו, או שלמפתח אין גישה למאגר הזה. בדוק את שם המשתמש, שם המאגר וההרשאות.';
+    if (שגיאה.סטטוס === 409 || שגיאה.סטטוס === 422) return 'גיטהאב דחה את העדכון, כי המאגר השתנה בדיוק עכשיו. נסה שוב.';
+    return `שגיאה מגיטהאב (קוד ${שגיאה.סטטוס}).`;
+  }
+  if (שגיאה instanceof TypeError) return 'אין חיבור לאינטרנט, או שהדפדפן חסם את הבקשה.';
+  return שגיאה.message || 'שגיאה לא צפויה.';
+}
+
+async function קרא_קובץ(נתיב, גרסה) {
+  const שאילתה = גרסה ? `?ref=${encodeURIComponent(גרסה)}` : '';
+  const נתונים = await גיטהאב(`${בסיס_מאגר()}/contents/${קודד_נתיב(נתיב)}${שאילתה}`);
+  const בייטים = Uint8Array.from(atob(נתונים.content.replace(/\s/g, '')), (תו) => תו.charCodeAt(0));
+  return new TextDecoder().decode(בייטים);
+}
+
+// טעינה ראשונה: הגדרות, מצב והרצה אחרונה
+async function טען_מהענן() {
+  if (!מחובר()) { צייר_הכל(); return; }
+  try {
+    const טקסט = await קרא_קובץ(נתיב_הגדרות);
+    הגדרות = נרמל(JSON.parse(טקסט));
+    חתימה_שמורה = חתימה(הגדרות);
+    אחסון_כתוב(מפתחות_אחסון.טיוטה, הגדרות);
+  } catch (שגיאה) {
+    הודעה(`לא הצלחתי לטעון את ההגדרות מהענן: ${הסבר_שגיאה(שגיאה)}`, 'שגיאה');
+  }
+  צייר_הכל();
+  await רענן_סטטוס();
+}
+
+// רענון תקופתי: מצב והרצה אחרונה (בלי לדרוס שינויים שלא נשמרו)
+async function רענן_סטטוס() {
+  clearTimeout(טיימר_רענון);
+  if (!מחובר()) { צייר_מצב(); return; }
+  try {
+    const [ריצות, טקסט_מצב] = await Promise.all([
+      גיטהאב(`${בסיס_מאגר()}/actions/workflows/${שם_קובץ_תזמון}/runs?per_page=1`),
+      קרא_קובץ(נתיב_מצב).catch(() => null),
+    ]);
+    הרצה_אחרונה = ריצות.workflow_runs?.[0] || null;
+    if (טקסט_מצב) מצב_ענן = JSON.parse(טקסט_מצב);
+    שגיאת_סטטוס = null;
+  } catch (שגיאה) {
+    שגיאת_סטטוס = הסבר_שגיאה(שגיאה);
+  }
+  צייר_מצב();
+  עדכן_ספירה();
+  const רצה = הרצה_אחרונה && הרצה_אחרונה.status !== 'completed';
+  טיימר_רענון = setTimeout(רענן_סטטוס, רצה ? 10000 : 60000);
+}
+
+// שמירה: עדכון קובץ התהליך וקובץ ההגדרות יחד, בשמירה אחת
+async function שמור_בענן() {
+  if (!מחובר()) { פתח_חיבור(); return; }
+  const בעיה = בדוק_תקינות();
+  if (בעיה) { הודעה(בעיה, 'שגיאה'); return; }
+  const כפתור = $('כפתור-שמירה');
+  כפתור.disabled = true;
+  כפתור.textContent = 'שומר…';
+  try {
+    const בסיס = בסיס_מאגר();
+    for (let ניסיון = 1; ; ניסיון++) {
+      const ענף_נוכחי = await גיטהאב(`${בסיס}/git/ref/heads/${ענף}`);
+      const מזהה_אב = ענף_נוכחי.object.sha;
+      const שמירה_אב = await גיטהאב(`${בסיס}/git/commits/${מזהה_אב}`);
+      const תהליך_חדש = החלף_בלוק(await קרא_קובץ(נתיב_תזמון, מזהה_אב));
+      const עץ = await גיטהאב(`${בסיס}/git/trees`, { שיטה: 'POST', גוף: {
+        base_tree: שמירה_אב.tree.sha,
+        tree: [
+          { path: נתיב_תזמון, mode: '100644', type: 'blob', content: תהליך_חדש },
+          { path: נתיב_הגדרות, mode: '100644', type: 'blob', content: JSON.stringify(בנה_קובץ_הגדרות(), null, 2) + '\n' },
+        ],
+      } });
+      const ראשון = חשב_מחזורים().find((מ) => מ.פעיל);
+      const שמירה = await גיטהאב(`${בסיס}/git/commits`, { שיטה: 'POST', גוף: {
+        message: `עדכון תזמון מדף הניהול: תחילת עבודה ${הגדרות.שעת_תחילת_עבודה}, לחיצה ראשונה ${לשעה(ראשון.שליחה)}`,
+        tree: עץ.sha,
+        parents: [מזהה_אב],
+      } });
+      try {
+        await גיטהאב(`${בסיס}/git/refs/heads/${ענף}`, { שיטה: 'PATCH', גוף: { sha: שמירה.sha } });
+        break;
+      } catch (שגיאה) {
+        if (שגיאה instanceof שגיאת_גיטהאב && שגיאה.סטטוס === 422 && ניסיון < 3) continue;
+        throw שגיאה;
+      }
+    }
+    חתימה_שמורה = חתימה(הגדרות);
+    const שעות = חשב_מחזורים().filter((מ) => מ.פעיל).map((מ) => לשעה(מ.שליחה)).join(', ');
+    הודעה(`התזמון עודכן בענן. הלחיצות יישלחו ב-${שעות} (שעון ישראל).`, 'הצלחה');
+  } catch (שגיאה) {
+    הודעה(`השמירה נכשלה: ${הסבר_שגיאה(שגיאה)}`, 'שגיאה');
+  } finally {
+    כפתור.disabled = false;
+    צייר_פס_שמירה();
+  }
+}
+
+async function שלח_פינג() {
+  if (!מחובר()) { פתח_חיבור(); return; }
+  if (מצב_ענן?.סוף_חלון && Date.now() < new Date(מצב_ענן.סוף_חלון).getTime()) {
+    const אישור = confirm(`לפי הפינג האחרון, יש חלון פעיל עד ${שעה_ישראל(מצב_ענן.סוף_חלון)}.\nפינג עכשיו לא יפתח חלון חדש.\n\nלשלוח בכל זאת?`);
+    if (!אישור) return;
+  }
+  const כפתור = $('כפתור-פינג');
+  כפתור.disabled = true;
+  try {
+    await גיטהאב(`${בסיס_מאגר()}/actions/workflows/${שם_קובץ_תזמון}/dispatches`, { שיטה: 'POST', גוף: { ref: ענף } });
+    הודעה('הבקשה נשלחה לגיטהאב. ההרצה תתחיל בעוד כמה שניות, והפינג יישלח תוך כדקה.', 'הצלחה');
+    setTimeout(רענן_סטטוס, 5000);
+  } catch (שגיאה) {
+    הודעה(`השליחה נכשלה: ${הסבר_שגיאה(שגיאה)}`, 'שגיאה');
+  } finally {
+    setTimeout(() => { כפתור.disabled = false; }, 3000);
+  }
+}
+
+// =====================================================================
+// חלונית החיבור
+// =====================================================================
+function פתח_חיבור() {
+  const ח = קרא_חיבור();
+  $('שדה-בעלים').value = ח.בעלים;
+  $('שדה-מאגר').value = ח.מאגר;
+  $('שדה-מפתח').value = ח.מפתח;
+  $('תוצאת-בדיקה').textContent = '';
+  $('חלונית-חיבור').hidden = false;
+  (ח.מפתח ? $('שדה-בעלים') : $('שדה-מפתח')).focus();
+}
+function סגור_חיבור() { $('חלונית-חיבור').hidden = true; }
+
+async function שמור_חיבור() {
+  const ח = {
+    בעלים: $('שדה-בעלים').value.trim(),
+    מאגר: $('שדה-מאגר').value.trim(),
+    מפתח: $('שדה-מפתח').value.trim(),
+  };
+  const יעד = $('תוצאת-בדיקה');
+  if (!ח.בעלים || !ח.מאגר || !ח.מפתח) { יעד.innerHTML = '<span class="status status-critical">✕ צריך למלא את שלושת השדות.</span>'; return; }
+  יעד.innerHTML = '<span class="status status-muted"><span class="spin">⟳</span> בודק חיבור…</span>';
+  try {
+    const מאגר = await גיטהאב(בסיס_מאגר(ח), { חיבור: ח });
+    אחסון_כתוב(מפתחות_אחסון.חיבור, ח);
+    יעד.innerHTML = `<span class="status status-good">✓ מחובר למאגר ${מאגר.full_name} (${מאגר.private ? 'פרטי' : 'ציבורי'})</span>`;
+    setTimeout(סגור_חיבור, 900);
+    חתימה_שמורה = null;
+    await טען_מהענן();
+  } catch (שגיאה) {
+    יעד.innerHTML = `<span class="status status-critical">✕ ${הסבר_שגיאה(שגיאה)}</span>`;
+  }
+}
+
+function נתק() {
+  אחסון_מחק(מפתחות_אחסון.חיבור);
+  מצב_ענן = null;
+  הרצה_אחרונה = null;
+  חתימה_שמורה = null;
+  $('שדה-מפתח').value = '';
+  $('תוצאת-בדיקה').innerHTML = '<span class="status status-muted">המפתח נמחק מהדפדפן הזה.</span>';
+  צייר_הכל();
+}
+
+// =====================================================================
+// מצב בהיר / כהה
+// =====================================================================
+function החל_ערכה(ערכה) {
+  if (ערכה) document.documentElement.setAttribute('data-theme', ערכה);
+  else document.documentElement.removeAttribute('data-theme');
+}
+function החלף_ערכה() {
+  const נוכחי = document.documentElement.getAttribute('data-theme')
+    || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const חדש = נוכחי === 'dark' ? 'light' : 'dark';
+  החל_ערכה(חדש);
+  אחסון_כתוב(מפתחות_אחסון.ערכה, חדש);
+}
+
+// =====================================================================
+// הכנת הפקדים
+// =====================================================================
+function הכן_פקדים() {
+  for (let ש = 0; ש < 24; ש++) $('בחירת-שעה').add(new Option(שתי_ספרות(ש), שתי_ספרות(ש)));
+  for (let ד = 0; ד < 60; ד += 10) $('בחירת-דקות').add(new Option(שתי_ספרות(ד), שתי_ספרות(ד)));
+  const עדכן_שעה = () => {
+    הגדרות.שעת_תחילת_עבודה = `${$('בחירת-שעה').value}:${$('בחירת-דקות').value}`;
+    שינוי();
+  };
+  $('בחירת-שעה').addEventListener('change', עדכן_שעה);
+  $('בחירת-דקות').addEventListener('change', עדכן_שעה);
+
+  $('סרגל-הקדמה').addEventListener('input', (ev) => { הגדרות.הקדמה_בשעות = Number(ev.target.value); שינוי(); });
+  for (const ערך of [0, 1, 2, 2.5, 3, 4]) {
+    const כפתור = document.createElement('button');
+    כפתור.className = 'chip text-sm';
+    כפתור.dataset.value = ערך;
+    כפתור.textContent = ערך === 2.5 ? '2.5 (מומלץ)' : ערך === 0 ? 'בלי הקדמה' : String(ערך);
+    כפתור.addEventListener('click', () => { הגדרות.הקדמה_בשעות = ערך; שינוי(); });
+    $('קיצורי-הקדמה').append(כפתור);
+  }
+
+  $('סרגל-מוקדם').addEventListener('input', (ev) => { הגדרות.דקות_שליחה_מוקדמת = Number(ev.target.value); שינוי(); });
+
+  ימים_קצר.forEach((שם, מספר) => {
+    const כפתור = document.createElement('button');
+    כפתור.className = 'chip';
+    כפתור.dataset.day = מספר;
+    כפתור.textContent = שם;
+    כפתור.setAttribute('aria-label', `יום ${ימים_מלא[מספר]}`);
+    כפתור.addEventListener('click', () => {
+      הגדרות.ימים = הגדרות.ימים.includes(מספר) ? הגדרות.ימים.filter((י) => י !== מספר) : [...הגדרות.ימים, מספר];
+      שינוי();
+    });
+    $('ימים').append(כפתור);
+  });
+
+  $('כפתור-שמירה').addEventListener('click', שמור_בענן);
+  $('כפתור-פינג').addEventListener('click', שלח_פינג);
+  $('כפתור-חיבור').addEventListener('click', פתח_חיבור);
+  $('כפתור-ערכה').addEventListener('click', החלף_ערכה);
+
+  const פעולות = {
+    'פתח-חיבור': פתח_חיבור,
+    'סגור-חיבור': סגור_חיבור,
+    'שמור-חיבור': שמור_חיבור,
+    'נתק': נתק,
+    'סגור-הודעה': () => { $('הודעה').hidden = true; },
+    'הצג-מפתח': (כפתור) => {
+      const שדה = $('שדה-מפתח');
+      שדה.type = שדה.type === 'password' ? 'text' : 'password';
+      כפתור.textContent = שדה.type === 'password' ? 'הצג' : 'הסתר';
+    },
+  };
+  document.addEventListener('click', (ev) => {
+    const יעד = ev.target.closest('[data-action]');
+    if (יעד && פעולות[יעד.dataset.action]) פעולות[יעד.dataset.action](יעד);
+  });
+  $('חלונית-חיבור').addEventListener('click', (ev) => { if (ev.target === $('חלונית-חיבור')) סגור_חיבור(); });
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { סגור_חיבור(); הסתר_בועה(); } });
+  window.addEventListener('scroll', הסתר_בועה, { passive: true });
+}
+
+// =====================================================================
+// הפעלה
+// =====================================================================
+החל_ערכה(אחסון_קרא(מפתחות_אחסון.ערכה, null));
+הגדרות = נרמל(אחסון_קרא(מפתחות_אחסון.טיוטה, ברירות_מחדל));
+הכן_פקדים();
+צייר_הכל();
+setInterval(() => {
+  עדכן_ספירה();
+  const קו = $('ציר-עכשיו');
+  if (קו) קו.style.right = `calc(${אחוז(זמן_ישראל().דקות)}% - 1px)`;
+}, 1000);
+טען_מהענן();
+</script>
+</body>
+</html>
